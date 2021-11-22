@@ -86,6 +86,8 @@ jobs:
         with:
           path: ./Agent/bin/Remotely-MacOS-x64.zip
           name: Mac-Agent-x64
+
+      
      
   build-windows:
 
@@ -188,6 +190,15 @@ jobs:
         path: ./publish/
         name: Server
     
+    - name: Azure Blob Upload
+      uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7
+      with:
+          connection_string: ${{ secrets.PROD_BLOB_CNX_STRING }}
+          container_name: $web
+          source_folder: ./publish/
+          destination_folder: /remotely/
+          clean_destination_folder: false
+          fail_if_source_empty: true
 
     # Remove the pfx
     - name: Remove the pfx
