@@ -87,8 +87,6 @@ jobs:
           path: ./Agent/bin/Remotely-MacOS-x64.zip
           name: Mac-Agent-x64
 
-      
-     
   build-windows:
 
     runs-on: windows-latest  # For a list of available runner types, refer to
@@ -188,21 +186,19 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         path: ./publish/
-        name: Server
+        name: Remotely_Server_-${{ github.event.inputs.rid }}
     
-    - name: Azure Blob Upload
-      uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7
-      with:
-          connection_string: ${{ secrets.PROD_BLOB_CNX_STRING }}
-          container_name: $web
-          source_folder: ./publish/
-          destination_folder: /remotely/
-          clean_destination_folder: false
-          fail_if_source_empty: true
-
     # Remove the pfx
     - name: Remove the pfx
       run: |
         if (Test-Path "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx") {
           Remove-Item -path "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx"
         }
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      #if: startsWith(github.ref, 'refs/tags/')
+      with:
+          files: |
+            Remotely_Server_-${{ github.event.inputs.rid }}.zip
+            Mac-Agent-x64.zip
