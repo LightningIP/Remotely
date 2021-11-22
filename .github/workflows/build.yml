@@ -21,15 +21,19 @@
 name: Build
 
 on:
-  workflow_dispatch:
-    inputs:
-      serverUrl:
-        description: 'Server URL'     
-        required: true
-      rid:
-        description: 'Server Runtime Identifier'     
-        required: false
-        default: "linux-x64"
+  #workflow_dispatch:
+  #  inputs:
+  #    serverUrl:
+  #      description: 'Server URL'     
+  #      required: true
+  #    rid:
+  #      description: 'Server Runtime Identifier'     
+  #      required: false
+  #      default: "linux-x64"
+  
+  push:
+    tags:
+      - "v*.*.*"
 
 jobs:
 
@@ -179,14 +183,14 @@ jobs:
     - name: Run Publish script
       shell: powershell
       run: |
-        .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:ServerUrl -CurrentVersion $env:CurrentVersion -RID ${{ github.event.inputs.rid }} -OutDir "$env:GITHUB_WORKSPACE\publish"
+        .\Utilities\Publish.ps1 -CertificatePath "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx" -CertificatePassword $env:PfxKey -Hostname $env:ServerUrl -CurrentVersion $env:CurrentVersion -RID linux-x64 -OutDir "$env:GITHUB_WORKSPACE\publish"
         
     # Upload build artifact to be deployed from Ubuntu runner
     - name: Upload build artifact
       uses: actions/upload-artifact@v2
       with:
         path: ./publish/
-        name: Remotely_Server_-${{ github.event.inputs.rid }}
+        name: Remotely_Server_Linux-x64
     
     # Remove the pfx
     - name: Remove the pfx
@@ -197,7 +201,7 @@ jobs:
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
-      #if: startsWith(github.ref, 'refs/tags/')
+      if: startsWith(github.ref, 'refs/tags/')
       with:
           files: |
-            Remotely_Server_-${{ github.event.inputs.rid }}.zip
+            Remotely_Server_Linux-x64.zip
