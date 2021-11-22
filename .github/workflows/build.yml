@@ -201,4 +201,3 @@ jobs:
       with:
           files: |
             Remotely_Server_-${{ github.event.inputs.rid }}.zip
-            Mac-Agent-x64.zip
