@@ -199,9 +199,16 @@ jobs:
           Remove-Item -path "$env:GITHUB_WORKSPACE\GitHubActionsWorkflow.pfx"
         }
 
+    - name: Zip Release
+      uses: thedoctor0/zip-release@master
+      with:
+        type: zip
+        filename: Remotely_Server_Linux-x64.zip
+        path: ./publish/
+
     - name: Create Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-          files: |
-            Remotely_Server_Linux-x64.zip
+          generate_release_notes: true
+          files: ./Remotely_Server_Linux-x64.zip
